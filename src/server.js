@@ -9,9 +9,11 @@ import { __dirname } from "./utils.js";
 dotenv.config();
 
 // Imports Routers
+//sape
 import categoryRouter from "./routes/category.route.js";
 import orderRouter from "./routes/order.route.js";
 import productRouter from "./routes/product.route.js"
+import extraRouter from "./routes/extra.route.js"
 
 
 // Initialize Express app
@@ -27,6 +29,7 @@ app.use(express.json());
 app.use('/api/categories', categoryRouter);
 app.use('/api/orders', authMiddleware, orderRouter);
 app.use('/api/products', productRouter)
+app.use('/api/extras', extraRouter)
 
 // File for the images
 app.use('/images', express.static(path.join(__dirname, 'public', 'images')));

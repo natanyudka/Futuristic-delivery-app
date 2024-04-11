@@ -1,23 +1,15 @@
 import { db } from '../config/firebase/firebase.config.js';
 import { bucket } from '../config/firebase/firebase.config.js';
-import admin from 'firebase-admin' // Asume que has inicializado Firebase Admin SDK aquí
-import Category from '../models/category.model.js';
-import fs from 'fs';
+import { downloadImage } from '../utils.js';
 import path from 'path';
-import os from 'os';
-import stream from 'stream';
-import { log } from 'console';
 
 const collectionRef = db.collection('categories');
-//const bucket = admin.bucket //.storage().bucket();
-console.log('bucket -', bucket);
-
 
 async function getAllCategories() {
   const snapshot = await collectionRef.get();
   const categories = [];
   const protocol = 'http';
-  const hostname = 'localhost:3000';
+  const hostname = '192.168.68.105:3000';
 
   for (let doc of snapshot.docs) {
     const data = doc.data();
@@ -32,7 +24,7 @@ async function getAllCategories() {
         console.log('LocalImagePath: ', localImagePath);
         setTimeout(() => {
          downloadImage(`images/${data.imageName}`, localImagePath);
-        }, 3000);
+        }, 5000);
 
         // Crea un URL para acceder a la imagen desde el servidor
         imageUrl = `${protocol}://${hostname}/images/${data.imageName}`;
@@ -41,7 +33,6 @@ async function getAllCategories() {
         imageUrl = ''; // O una URL de imagen predeterminada en caso de error.
       }
     }
-    
     categories.push({
       ...data,
       imageUrl,
@@ -51,10 +42,7 @@ async function getAllCategories() {
 }
 
 // Función para descargar la imagen de Firebase Storage
-async function downloadImage(storagePath, localPath) {
-  const dest = fs.createWriteStream(localPath);
-  await bucket.file(storagePath).createReadStream().pipe(dest);
-}
+
 
 
 async function getSignedUrlForImage(filePath) {
